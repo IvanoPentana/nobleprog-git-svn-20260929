@@ -3,11 +3,18 @@ namespace Catalog;
 public class PriceCalculator
 {
     private readonly decimal _vatRate;
+    private readonly decimal _reducedVatRate;
+    private readonly ISet<string> _reducedCodes;
 
-    public PriceCalculator(decimal vatRate)
+    public PriceCalculator(decimal vatRate, decimal reducedVatRate = 0m, ISet<string>? reducedCodes = null)
     {
         _vatRate = vatRate;
+        _reducedVatRate = reducedVatRate;
+        _reducedCodes = reducedCodes ?? new HashSet<string>();
     }
+
+    public decimal VatFor(Product product) =>
+        _reducedCodes.Contains(product.Code) ? _reducedVatRate : _vatRate;
 
     public decimal Net(Product product, int quantity)
     {
